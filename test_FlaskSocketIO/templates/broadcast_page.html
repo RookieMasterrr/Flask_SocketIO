@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>broadcast_page</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
+    $(document).ready(function(){
+        
+        var socket = io("http://127.0.0.1:5000");
+        socket.send('User has connected!');
+                
+
+        socket.on("message",function(msg){
+        $("#Broadcastmessages").append("<li>"+msg+"</li>");
+        console.log("recMessage")
+        });
+
+        $('#broadcast').on('click',function(){
+        socket.send($('#myMessage').val());
+        $('#myMessage').val("");
+        });
+
+        $('#joinroom').on('click',function(){
+        socket.emit('join',{'room':$('#roomid').val()});
+        $('#roomid').val("");
+        });
+
+        $('#leaveroom').on('click',function(){
+        socket.emit('leave',{'room':$('#roomid2').val()});
+        $('#roomid2').val("");
+        });
+
+        $('#send').on('click',function(){
+        socket.emit('toSomeRoom',$('#aMessage').val());
+        $('#aMessage').val('');
+        })
+
+        socket.on("Roommessage",function(msg){
+        $("#Roommessages").append("<li>"+msg+"</li>");
+        console.log("recMessage")
+        });
+
+        $('#changeName').on('click',function(){
+            socket.emit('changeName',$('#myName').val());
+            $('#myName').val("")
+        })
+    
+    })
+
+
+    
+</script>
+
+<input type="text" id="myName">
+<button id="changeName">Submit</button><br>
+
+
+<ul id="Broadcastmessages"></ul>
+
+<input type="text" id="myMessage">
+<button id="broadcast">Broadcast</button><br>
+
+<ul id="Roommessages"></ul>
+
+<input type="text" id="roomid">
+<button id="joinroom">Join</button><br>
+
+<input type="text" id="roomid2">
+<button id="leaveroom">Leave</button><br>
+
+
+<input type="text" id="aMessage">
+<button id="send">Send Msg To The Room</button>
+</body>
+</html>
